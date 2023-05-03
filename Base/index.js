@@ -77,35 +77,65 @@ sampleRoutes.route('/').post(function (req, res) {
 // update selected sample with put method
 sampleRoutes.route('/:id').put(async function (req, res) {
     let id = req.params.id;
-    const sample = await Sample.findById(id).catch(err => {
-        res.status(400).send({
-            status: 400,
-            message: "Update not possible"
+    // const sample = await Sample.findById(id).catch(err => {
+    //     res.status(400).send({
+    //         status: 400,
+    //         message: "Update not possible"
+    //     });
+    // });;
+    // if (!sample)
+    //     res.status(404).send({
+    //         status: 404,
+    //         message: "data is not found"
+    //     });
+    // else {
+    Sample.findByIdAndUpdate(id, {
+        sample_name: req.body.sample_name,
+        sample_note: req.body.sample_note
+    }).then((docs) => {
+        res.status(200).json({
+            status: 200,
+            message: 'Sample updated successfully',
+            data: docs
         });
-    });;
-    if (!sample)
-        res.status(404).send({
-            status: 404,
-            message: "data is not found"
-        });
-    else {
-        sample.sample_name = req.body.sample_name;
-        sample.sample_note = req.body.sample_note;
-        sample.save().then(todo => {
-            res.status(200).json({
-                status: 200,
-                message: 'Sample updated successfully'
+    }).catch(err => {
+            res.status(400).send({
+                status: 400,
+                message: "Update not possible"
             });
-        })
-    }
+        });
+    });
+    // , function (err, docs) {
+    //     if (err) {
+    //         res.status(400).send({
+    //             status: 400,
+    //             message: "Update not possible"
+    //         });
+    //     } else {
+    //         res.status(200).json({
+    //             status: 200,
+    //             message: 'Sample updated successfully',
+    //             data: docs
+    //         });
+    //     }
+    // })
+    // sample.sample_name = req.body.sample_name;
+    // sample.sample_note = req.body.sample_note;
+    // sample.save().then(todo => {
+    //     res.status(200).json({
+    //         status: 200,
+    //         message: 'Sample updated successfully'
+    //     });
+    // })
+});
 });
 
 
 // delete selected sample
 sampleRoutes.route('/:id').delete(async function (req, res) {
     let id = req.params.id;
-    await Sample.deleteOne(id)
-        .then(_=> {
+    await Sample.findByIdAndDelete(id)
+        .then(_ => {
             res.status(200).send({
                 status: 200,
                 message: "Data deleted"
@@ -117,12 +147,6 @@ sampleRoutes.route('/:id').delete(async function (req, res) {
                 message: 'deleting data failed'
             });
         })
-    // if (!sample)
-    //     res.status(404).send({
-    //         status: 404,
-    //         message: "data is not found"
-    //     });
-    // else
 });
 
 app.use('/sample', sampleRoutes);
