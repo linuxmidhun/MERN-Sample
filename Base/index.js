@@ -5,13 +5,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const PORT = 4000;
 const sampleRoutes = express.Router();
+const temporaryRoutes = express.Router();
 
 let Sample = require('./sample.model');
 
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb+srv://midhunmadhavan:Abcd!234@generalcluster.k1t5r0t.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true, dbName: 'SampleDb' });
+mongoose.connect('mongodb+srv://midhunmadhavan:Abcd!234@generalcluster.k1t5r0t.mongodb.net/SampleDb?retryWrites=true&w=majority', { useNewUrlParser: true });
 const connection = mongoose.connection;
 
 connection.once('open', function () {
@@ -99,10 +100,9 @@ sampleRoutes.route('/:id').put(async function (req, res) {
             data: docs
         });
     }).catch(err => {
-            res.status(400).send({
-                status: 400,
-                message: "Update not possible"
-            });
+        res.status(400).send({
+            status: 400,
+            message: "Update not possible"
         });
     });
     // , function (err, docs) {
@@ -127,7 +127,7 @@ sampleRoutes.route('/:id').put(async function (req, res) {
     //         message: 'Sample updated successfully'
     //     });
     // })
-});
+    // });
 });
 
 
@@ -149,7 +149,12 @@ sampleRoutes.route('/:id').delete(async function (req, res) {
         })
 });
 
+temporaryRoutes.route('/').get((req, res) => {
+    res.json("Hello world");
+});
+
 app.use('/sample', sampleRoutes);
+app.use('/temp', temporaryRoutes);
 
 app.listen(PORT, function () {
     console.log("Server is running on Port: " + PORT);
